@@ -4,6 +4,7 @@
 use Dotenv\Dotenv;
 use Drrcknlsn\Axo\Command;
 use Drrcknlsn\Axo\Command\Bug;
+use Drrcknlsn\Axo\Command\Picklists;
 use Drrcknlsn\Axo\Command\Task;
 use Drrcknlsn\Axo\Command\Users;
 use Symfony\Component\Console\Application;
@@ -16,6 +17,7 @@ $dotenv->load();
 $app = new Application();
 $app->add(new Bug\ListCommand());
 $app->add(new Bug\ShowCommand());
+$app->add(new Picklists\ListCommand());
 $app->add(new Task\ListCommand());
 $app->add(new Task\ShowCommand());
 $app->add(new Users\ListCommand());

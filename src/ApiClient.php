@@ -110,6 +110,20 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/picklists.html#!/picklists/_picklists_picklist_type_GET_get
+     */
+    public function getPicklists(string $picklistType): array
+    {
+        $cacheKey = $this->getCacheKey('picklists-' . $picklistType);
+
+        return $this->cache->get($cacheKey, function () use ($picklistType) {
+            $resData = $this->get('/picklists/' . $picklistType);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/users.html#!/users/_users_id_GET_get
      */
     public function getUser(int $id): array
