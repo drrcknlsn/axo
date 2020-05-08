@@ -2,9 +2,11 @@
 
 namespace Drrcknlsn\Axo;
 
+use Exception;
 use GuzzleHttp\Client as HttpClient;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class ApiClient
 {
@@ -58,9 +60,15 @@ class ApiClient
      */
     public function getBug(int $id): array
     {
-        $resData = $this->get('/defects/' . $id);
+        $cacheKey = $this->getCacheKey('bug-' . $id);
 
-        return $resData['data'];
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/defects/' . $id);
+
+            return $resData['data'];
+        });
     }
 
     /**
@@ -81,9 +89,15 @@ class ApiClient
      */
     public function getTask(int $id): array
     {
-        $resData = $this->get('/tasks/' . $id);
+        $cacheKey = $this->getCacheKey('task-' . $id);
 
-        return $resData['data'];
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/tasks/' . $id);
+
+            return $resData['data'];
+        });
     }
 
     /**
@@ -102,22 +116,77 @@ class ApiClient
     /**
      * @see http://developer.axosoft.com/api/filters.html#!/filters/_filters_GET_get
      */
-    public function getFilters(string $itemType): array
+    public function getFilters(string $type): array
     {
         return $this->get('/filters', [
-            'item_type' => $itemType,
+            'item_type' => $type,
         ]);
     }
 
     /**
      * @see http://developer.axosoft.com/api/picklists.html#!/picklists/_picklists_picklist_type_GET_get
      */
-    public function getPicklists(string $picklistType): array
+    public function getPicklist(string $type): array
     {
-        $cacheKey = $this->getCacheKey('picklists-' . $picklistType);
+        $cacheKey = $this->getCacheKey('picklist-' . $type);
 
-        return $this->cache->get($cacheKey, function () use ($picklistType) {
-            $resData = $this->get('/picklists/' . $picklistType);
+        return $this->cache->get($cacheKey, function () use ($type) {
+            $resData = $this->get('/picklists/' . $type);
+
+            return $resData['data'];
+        });
+    }
+
+    public function getPicklistItem(string $type, int $id): array
+    {
+        $picklist = $this->getPicklist($type);
+
+        foreach ($picklist as $item) {
+            if ($item['id'] === $id) {
+                return $item;
+            }
+        }
+
+        throw new Exception(sprintf(
+            'Item "%s" not found in picklist "%s"',
+            $id,
+            $type
+        ));
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/projects.html#!/projects/_projects_GET_get
+     */
+    public function getProjects(): array
+    {
+        $resData = $this->get('/projects');
+
+        return $resData['data'];
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/projects.html#!/projects/_projects_id_GET_get
+     */
+    public function getProject(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('project-' . $id);
+
+        return $this->cache->get($cacheKey, function () use ($id) {
+            $resData = $this->get('/projects/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/releases.html#!/releases/_releases_id_GET_get
+     */
+    public function getRelease(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('release-' . $id);
+
+        return $this->cache->get($cacheKey, function () use ($id) {
+            $resData = $this->get('/releases/' . $id);
 
             return $resData['data'];
         });
@@ -146,6 +215,20 @@ class ApiClient
 
         return $this->cache->get($cacheKey, function () {
             $resData = $this->get('/users');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/workflow_steps.html#!/workflow_steps/_workflow_steps_id_GET_get
+     */
+    public function getWorkflowStep(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('workflow-step-' . $id);
+
+        return $this->cache->get($cacheKey, function () use ($id) {
+            $resData = $this->get('/workflow_steps/' . $id);
 
             return $resData['data'];
         });

@@ -26,9 +26,9 @@ class ListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiClient = new ApiClient();
-        $picklists = $apiClient->getPicklists($input->getArgument('type'));
+        $picklist = $apiClient->getPicklist($input->getArgument('type'));
 
-        $output->writeln(json_encode($picklists, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        $output->writeln(json_encode($picklist, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
         return 0;
     }

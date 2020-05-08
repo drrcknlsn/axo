@@ -17,16 +17,16 @@ class ShowCommand extends Command
         $this->setDescription('Displays a given bug.');
 
         $this->addArgument(
-            'num',
+            'id',
             InputArgument::REQUIRED,
-            'Which bug number do you want to show?'
+            'The ID of the bug to show'
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiClient = new ApiClient();
-        $bug = $apiClient->getBug($input->getArgument('num'));
+        $bug = $apiClient->getBug($input->getArgument('id'));
 
         $output->writeln(json_encode($bug, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
