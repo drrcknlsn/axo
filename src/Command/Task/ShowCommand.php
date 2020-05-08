@@ -1,6 +1,6 @@
 <?php
 
-namespace Drrcknlsn\Axo\Command;
+namespace Drrcknlsn\Axo\Command\Task;
 
 use Drrcknlsn\Axo\ApiClient;
 use Symfony\Component\Console\Command\Command;
@@ -8,12 +8,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ShowTaskCommand extends Command
+class ShowCommand extends Command
 {
     protected static $defaultName = 'task:show';
 
     protected function configure()
     {
+        $this->setDescription('Displays a given task.');
+
         $this->addArgument(
             'num',
             InputArgument::REQUIRED,

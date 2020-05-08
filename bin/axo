@@ -2,8 +2,10 @@
 <?php
 
 use Dotenv\Dotenv;
-use Symfony\Component\Console\Application;
 use Drrcknlsn\Axo\Command;
+use Drrcknlsn\Axo\Command\Bug;
+use Drrcknlsn\Axo\Command\Task;
+use Symfony\Component\Console\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -11,9 +13,9 @@ $dotenv = DotEnv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
 $app = new Application();
-$app->add(new Command\ShowBugCommand());
-$app->add(new Command\ShowTaskCommand());
+$app->add(new Bug\ShowCommand());
+$app->add(new Task\ShowCommand());
+$app->add(new Bug\ListCommand());
+$app->add(new Task\ListCommand());
 $app->add(new Command\ListBugFiltersCommand());
-$app->add(new Command\ListBugsCommand());
-$app->add(new Command\ListTasksCommand());
 $app->run();
