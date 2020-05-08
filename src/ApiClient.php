@@ -45,7 +45,7 @@ class ApiClient
         $this->apiVersion = $apiVersion;
         $this->httpClient = new HttpClient();
 
-        $this->baseUrl = getenv('BASE_URL');
+        $this->baseUrl = getenv('AXO_BASE_URL');
         $this->authorizeUrl = $this->baseUrl . '/auth';
         $this->accessTokenUrl = $this->baseUrl . '/api/oauth2/token';
 
@@ -180,13 +180,13 @@ class ApiClient
 
     private function getAccessToken(): string
     {
-        $cacheKey = md5(getenv('USERNAME'));
+        $cacheKey = md5(getenv('AXO_USERNAME'));
 
         return $this->cache->get($cacheKey, function () {
             $provider = new GenericProvider(
                 [
-                    'clientId' => getenv('CLIENT_ID'),
-                    'clientSecret' => getenv('CLIENT_SECRET'),
+                    'clientId' => getenv('AXO_CLIENT_ID'),
+                    'clientSecret' => getenv('AXO_CLIENT_SECRET'),
                     'urlAuthorize' => $this->authorizeUrl,
                     'urlAccessToken' => $this->accessTokenUrl,
                     'urlResourceOwnerDetails' => '',
@@ -199,8 +199,8 @@ class ApiClient
             // TODO(derrick): Check for token expiration.
             // TODO(derrick): Implement refresh token usage.
             return $provider->getAccessToken('password', [
-                'username' => getenv('USERNAME'),
-                'password' => getenv('PASSWORD'),
+                'username' => getenv('AXO_USERNAME'),
+                'password' => getenv('AXO_PASSWORD'),
             ]);
         });
     }
