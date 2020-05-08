@@ -18,7 +18,8 @@
         "league/oauth2-client": "^2.4",
         "symfony/console": "^4.4",
         "vlucas/phpdotenv": "^4.1",
-        "symfony/cache": "^4.4"
+        "symfony/cache": "^4.4",
+        "nesbot/carbon": "^2.33"
     },
     "autoload": {
         "psr-4": {

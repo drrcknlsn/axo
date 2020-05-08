@@ -2,6 +2,7 @@
 
 namespace Drrcknlsn\Axo\Command\Task;
 
+use Carbon\Carbon;
 use Drrcknlsn\Axo\ApiClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -95,6 +96,20 @@ class ShowCommand extends Command
             $category = $apiClient->getPicklistItem('category', $task['category']['id']);
             $task['category'] = $category['name'];
         }
+
+        $startDate = Carbon::parse($task['start_date']);
+        $task['start_date'] = sprintf(
+            '%s (%s)',
+            $startDate->toDayDateTimeString(),
+            $startDate->diffForHumans()
+        );
+
+        $updated = Carbon::parse($task['last_updated_date_time']);
+        $task['last_updated_date_time'] = sprintf(
+            '%s (%s)',
+            $updated->toDayDateTimeString(),
+            $updated->diffForHumans()
+        );
 
         $desc = $task['description'];
         unset($task['description']);
