@@ -101,6 +101,22 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/tasks.html#!/tasks/_item_type_id_comments_GET_get
+     */
+    public function getTaskComments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('task-' . $id . '-comments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/tasks/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/tasks.html#!/tasks/_item_type_GET_get
      */
     public function getTasks(array $options = []): array
