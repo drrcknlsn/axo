@@ -1,4 +1,18 @@
 {
+    "name": "drrcknlsn/axo",
+    "type": "library",
+    "description": "CLI tools for working with the Axosoft API",
+    "keywords": [
+        "axosoft",
+        "api",
+        "cli"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Derrick Nelson"
+        }
+    ],
     "require": {
         "guzzlehttp/guzzle": "^6.5",
         "league/oauth2-client": "^2.4",
