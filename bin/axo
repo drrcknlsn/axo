@@ -5,6 +5,7 @@ use Dotenv\Dotenv;
 use Drrcknlsn\Axo\Command;
 use Drrcknlsn\Axo\Command\Bug;
 use Drrcknlsn\Axo\Command\Task;
+use Drrcknlsn\Axo\Command\Users;
 use Symfony\Component\Console\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -13,9 +14,11 @@ $dotenv = DotEnv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
 $app = new Application();
-$app->add(new Bug\ShowCommand());
-$app->add(new Task\ShowCommand());
 $app->add(new Bug\ListCommand());
+$app->add(new Bug\ShowCommand());
 $app->add(new Task\ListCommand());
+$app->add(new Task\ShowCommand());
+$app->add(new Users\ListCommand());
+$app->add(new Users\ShowCommand());
 $app->add(new Command\ListBugFiltersCommand());
 $app->run();

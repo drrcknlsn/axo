@@ -114,7 +114,13 @@ class ApiClient
      */
     public function getUser(int $id): array
     {
-        return $this->get('/users/' . $id);
+        $cacheKey = $this->getCacheKey('user-' . $id);
+
+        return $this->cache->get($cacheKey, function () use ($id) {
+            $resData = $this->get('/users/' . $id);
+
+            return $resData['data'];
+        });
     }
 
     /**
@@ -122,7 +128,13 @@ class ApiClient
      */
     public function getUsers(): array
     {
-        return $this->get('/users');
+        $cacheKey = $this->getCacheKey('users');
+
+        return $this->cache->get($cacheKey, function () {
+            $resData = $this->get('/users');
+
+            return $resData['data'];
+        });
     }
 
     /**
@@ -180,7 +192,7 @@ class ApiClient
 
     private function getAccessToken(): string
     {
-        $cacheKey = md5(getenv('AXO_USERNAME'));
+        $cacheKey = $this->getCacheKey('access-token');
 
         return $this->cache->get($cacheKey, function () {
             $provider = new GenericProvider(
@@ -203,5 +215,14 @@ class ApiClient
                 'password' => getenv('AXO_PASSWORD'),
             ]);
         });
+    }
+
+    private function getCacheKey(string $type): string
+    {
+        return sprintf(
+            '%s.%s',
+            md5(getenv('AXO_BASE_URL') . ':' . getenv('AXO_USERNAME')),
+            $type
+        );
     }
 }
