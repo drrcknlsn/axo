@@ -7,8 +7,11 @@
         "symfony/cache": "^4.4"
     },
     "autoload": {
-      "psr-4": {
-        "Drrcknlsn\\Axo\\": "src/"
-      }
-    }
+        "psr-4": {
+            "Drrcknlsn\\Axo\\": "src/"
+        }
+    },
+    "bin": [
+        "bin/axo"
+    ]
 }
