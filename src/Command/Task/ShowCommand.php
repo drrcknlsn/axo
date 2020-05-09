@@ -5,6 +5,8 @@ namespace Drrcknlsn\Axo\Command\Task;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Drrcknlsn\Axo\ApiClient;
+use HTMLPurifier;
+use HTMLPurifier_Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -64,11 +66,19 @@ class ShowCommand extends Command
             ]);
         }
 
-        $status = $apiClient->getPicklistItem('status', $task['status']['id']);
-        $task['status'] = $status['name'];
+        if ($task['status']['id'] === 0) {
+            $task['status'] = null;
+        } else {
+            $status = $apiClient->getPicklistItem('status', $task['status']['id']);
+            $task['status'] = $status['name'];
+        }
 
-        $priority = $apiClient->getPicklistItem('priority', $task['priority']['id']);
-        $task['priority'] = $priority['name'];
+        if ($task['priority']['id'] === 0) {
+            $task['priority'] = null;
+        } else {
+            $priority = $apiClient->getPicklistItem('priority', $task['priority']['id']);
+            $task['priority'] = $priority['name'];
+        }
 
         if ($task['reported_by']['id'] === 0) {
             $task['reported_by'] = null;
@@ -119,8 +129,12 @@ class ShowCommand extends Command
             $task['category'] = $category['name'];
         }
 
-        $task['start_date'] = $this->formatDateTime($task['start_date']);
-        $task['last_updated_date_time'] = $this->formatDateTime($task['last_updated_date_time']);
+        $task['start_date'] = $task['start_date']
+            ? $this->formatDateTime($task['start_date'])
+            : null;
+        $task['last_updated_date_time'] = $task['last_updated_date_time']
+            ? $this->formatDateTime($task['last_updated_date_time'])
+            : null;
 
         $title = sprintf('[%s] %s', $task['id'], $task['name']);
         $desc = $task['description'];
@@ -226,24 +240,50 @@ class ShowCommand extends Command
 
     private function formatHtml(string $s): string
     {
-        // Strip some tags we don't care about.
-        $s = preg_replace('#<(span|u)[^>]*>(.*?)</\\1>#', '$2', $s);
-        // Replace <strong>...</strong> with bolded text.
-        $s = preg_replace('#<strong[^>]*>(.*?)</strong>#', '<options=bold>$1</>', $s);
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('HTML.Trusted', true);
+        $config->set('HTML.AllowedElements', [
+            'a',
+            'b',
+            'br',
+            'em',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6',
+            'i',
+            'img',
+            'input',
+            'li',
+            'ol',
+            'p',
+            'strong',
+            'u',
+            'ul',
+        ]);
+        $purifier = new HTMLPurifier($config);
+        $s = $purifier->purify($s);
+
+        $s = preg_replace('#<(b|strong)[^>]*>(.*?)</\\1>#', '<options=bold>$2</>', $s);
+        $s = preg_replace('#<(em|u)[^>]*>(.*?)</\\1>#', '<options=underscore>$2</>', $s);
         // Replace non-breaking spaces with spaces.
         $s = str_replace('&nbsp;', ' ', $s);
         $s = $this->links($s);
+        $s = $this->images($s);
         $s = $this->mentions($s);
+        // Strip all newlines.
+        $s = preg_replace('#\R#', '', $s);
         // Replace <br> with newlines.
         $s = preg_replace('#<br[^>]*>#', "\n", $s);
+        // Collapse superfluous empty lines.
+        $s = preg_replace('#\R{3,}#', "\n\n", $s);
+        // Decode entities.
         $s = html_entity_decode($s);
         $s = trim($s);
         // Trim trailing whitespace.
         $s = preg_replace('#\s+$#', '', $s);
-        // Normalize line endings.
-        $s = preg_replace('#\R#', "\n", $s);
-        // Collapse superfluous empty lines.
-        $s = preg_replace('#\R{3,}#', "\n\n", $s);
 
         return $s;
     }
@@ -252,7 +292,16 @@ class ShowCommand extends Command
     {
         return preg_replace(
             '#<a href="(.+?)">(.+?)</a>#',
-            '<href=$1>$2</>',
+            '<fg=green;options=bold>[LINK]</><href=$1>$2</><fg=green;options=bold>[/LINK]</>',
+            $s
+        );
+    }
+
+    private function images(string $s): string
+    {
+        return preg_replace(
+            '#<img src="(.+?)"[^>]*>#',
+            '<fg=magenta>[IMG]</><href=$1>$1</><fg=magenta>[/IMG]</>',
             $s
         );
     }
@@ -260,7 +309,7 @@ class ShowCommand extends Command
     private function mentions(string $s): string
     {
         return preg_replace(
-            '#<input [^>]*data-mention="u_\d+" [^>]*value="(@.+?)"[^>]*>#',
+            '#<input [^>]*value="(@ .+?)"[^>]*>#',
             '<fg=white;bg=blue;options=bold>$1</>',
             $s
         );
