@@ -85,7 +85,6 @@ class ApiClient
     public function getBugs(array $options = []): array
     {
         $defaults = [
-            'columns' => 'id,name',
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
@@ -130,7 +129,6 @@ class ApiClient
     public function getTasks(array $options = []): array
     {
         $defaults = [
-            'columns' => 'id,name',
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
@@ -143,7 +141,6 @@ class ApiClient
     public function getFeatures(array $options = []): array
     {
         $defaults = [
-            'columns' => 'id,name',
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
@@ -156,7 +153,6 @@ class ApiClient
     public function getItems(array $options = []): array
     {
         $defaults = [
-            //'columns' => 'id,name',
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
