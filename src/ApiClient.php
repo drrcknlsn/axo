@@ -10,7 +10,15 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class ApiClient
 {
+    /**
+     * @var string
+     */
     private const DEFAULT_API_VERSION = 'v6';
+
+    /**
+     * @var int
+     */
+    private const DEFAULT_PAGE_SIZE = 20;
 
     /**
      * @var string
@@ -130,13 +138,34 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/features.html#!/features/_item_type_GET_get
+     */
+    public function getFeatures(array $options = []): array
+    {
+        $defaults = [
+            'columns' => 'id,name',
+            'page_size' => self::DEFAULT_PAGE_SIZE,
+        ];
+
+        return $this->get('/features', array_merge($defaults, $options));
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/filters.html#!/filters/_filters_GET_get
      */
     public function getFilters(string $type): array
     {
-        return $this->get('/filters', [
-            'item_type' => $type,
-        ]);
+        $cacheKey = $this->getCacheKey('filters-' . $type);
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($type) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/filters', [
+                'item_type' => $type,
+            ]);
+
+            return $resData['data'];
+        });
     }
 
     /**
