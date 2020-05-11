@@ -151,6 +151,19 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/items.html#!/items/_item_type_GET_get
+     */
+    public function getItems(array $options = []): array
+    {
+        $defaults = [
+            //'columns' => 'id,name',
+            'page_size' => self::DEFAULT_PAGE_SIZE,
+        ];
+
+        return $this->get('/items', array_merge($defaults, $options));
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/fields.html#!/fields/_fields_custom_GET_get
      */
     public function getCustomFields(string $type): array
