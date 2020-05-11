@@ -21,6 +21,7 @@ $app->add(new Bug\ListCommand());
 $app->add(new Bug\ShowCommand());
 $app->add(new Features\FiltersCommand());
 $app->add(new Picklists\ListCommand());
+$app->add(new Task\CustomFieldsCommand());
 $app->add(new Task\FiltersCommand());
 $app->add(new Task\ListCommand());
 $app->add(new Task\ShowCommand());
