@@ -151,6 +151,41 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/fields.html#!/fields/_fields_custom_GET_get
+     */
+    public function getCustomFields(string $type): array
+    {
+        $cacheKey = $this->getCacheKey('fields-' . $type);
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($type) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/fields/custom', [
+                'type' => $type,
+            ]);
+
+            return $resData['data'];
+        });
+    }
+
+    public function getCustomField(string $type, string $name): array
+    {
+        $fields = $this->getCustomFields($type);
+
+        foreach ($fields as $field) {
+            if ($field['name'] === $name) {
+                return $field;
+            }
+        }
+
+        throw new Exception(sprintf(
+            'Field "%s" not found for type "%s"',
+            $name,
+            $type
+        ));
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/filters.html#!/filters/_filters_GET_get
      */
     public function getFilters(string $type): array

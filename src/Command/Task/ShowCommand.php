@@ -136,6 +136,13 @@ class ShowCommand extends Command
             ? $this->formatDateTime($task['last_updated_date_time'])
             : null;
 
+        foreach ($task['custom_fields'] as $name => $value) {
+            $field = $apiClient->getCustomField('tasks', $name);
+            // TODO(derrick): Do value translations.
+            $task['_' . $field['label']] = $value;
+        }
+        unset($task['custom_fields']);
+
         $title = sprintf('[%s] %s', $task['id'], $task['name']);
         $desc = $task['description'];
         unset($task['description']);
