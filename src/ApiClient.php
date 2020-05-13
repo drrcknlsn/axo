@@ -80,6 +80,22 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/defects.html#!/defects/_item_type_id_comments_GET_get
+     */
+    public function getBugComments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('defect-' . $id . '-comments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/defects/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/defects.html#!/defects/_item_type_GET_get
      */
     public function getBugs(array $options = []): array
