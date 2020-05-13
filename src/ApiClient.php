@@ -148,6 +148,38 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/features.html#!/features/_item_type_number_GET_get
+     */
+    public function getFeature(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('feature-' . $id);
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/features/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/features.html#!/features/_item_type_id_comments_GET_get
+     */
+    public function getFeatureComments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('feature-' . $id . '-comments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/features/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/items.html#!/items/_item_type_GET_get
      */
     public function getItems(array $options = []): array

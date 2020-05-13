@@ -1,6 +1,6 @@
 <?php
 
-namespace Drrcknlsn\Axo\Command\Bug;
+namespace Drrcknlsn\Axo\Command\Features;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
@@ -17,11 +17,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ShowCommand extends Command
 {
-    protected static $defaultName = 'bug:show';
+    protected static $defaultName = 'features:show';
 
     protected function configure()
     {
-        $this->setDescription('Displays a given bug.');
+        $this->setDescription('Displays a given feature.');
 
         $this->setDefinition(new InputDefinition([
             new InputOption('desc', 'd'),
@@ -31,140 +31,140 @@ class ShowCommand extends Command
         $this->addArgument(
             'id',
             InputArgument::REQUIRED,
-            'The ID of the bug to show'
+            'The ID of the feature to show'
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiClient = new ApiClient();
-        $bug = $apiClient->getBug($input->getArgument('id'));
+        $feature = $apiClient->getFeature($input->getArgument('id'));
 
-        if ($bug['parent']['id'] === 0) {
-            $bug['parent'] = null;
+        if ($feature['parent']['id'] === 0) {
+            $feature['parent'] = null;
         } else {
-            $parent = $apiClient->getBug($bug['parent']['id']);
-            $bug['parent'] = sprintf('[%s] %s', $parent['id'], $parent['name']);
+            $parent = $apiClient->getFeature($feature['parent']['id']);
+            $feature['parent'] = sprintf('[%s] %s', $parent['id'], $parent['name']);
         }
 
-        $project = $apiClient->getProject($bug['project']['id']);
-        $bug['project'] = $project['name'];
+        $project = $apiClient->getProject($feature['project']['id']);
+        $feature['project'] = $project['name'];
 
-        $workflowStep = $apiClient->getWorkflowStep($bug['workflow_step']['id']);
-        $bug['workflow_step'] = $workflowStep['name'];
+        $workflowStep = $apiClient->getWorkflowStep($feature['workflow_step']['id']);
+        $feature['workflow_step'] = $workflowStep['name'];
 
-        $release = $apiClient->getRelease($bug['release']['id']);
-        $bug['release'] = $release['name'];
+        $release = $apiClient->getRelease($feature['release']['id']);
+        $feature['release'] = $release['name'];
 
-        if ($bug['assigned_to']['id'] === 0) {
-            $bug['assigned_to'] = null;
+        if ($feature['assigned_to']['id'] === 0) {
+            $feature['assigned_to'] = null;
         } else {
-            $assignedTo = $apiClient->getUser($bug['assigned_to']['id']);
-            $bug['assigned_to'] = implode(' ', [
+            $assignedTo = $apiClient->getUser($feature['assigned_to']['id']);
+            $feature['assigned_to'] = implode(' ', [
                 $assignedTo['first_name'],
                 $assignedTo['last_name'],
             ]);
         }
 
-        if ($bug['status']['id'] === 0) {
-            $bug['status'] = null;
+        if ($feature['status']['id'] === 0) {
+            $feature['status'] = null;
         } else {
-            $status = $apiClient->getPicklistItem('status', $bug['status']['id']);
-            $bug['status'] = $status['name'];
+            $status = $apiClient->getPicklistItem('status', $feature['status']['id']);
+            $feature['status'] = $status['name'];
         }
 
-        if ($bug['priority']['id'] === 0) {
-            $bug['priority'] = null;
+        if ($feature['priority']['id'] === 0) {
+            $feature['priority'] = null;
         } else {
-            $priority = $apiClient->getPicklistItem('priority', $bug['priority']['id']);
-            $bug['priority'] = $priority['name'];
+            $priority = $apiClient->getPicklistItem('priority', $feature['priority']['id']);
+            $feature['priority'] = $priority['name'];
         }
 
-        if ($bug['reported_by']['id'] === 0) {
-            $bug['reported_by'] = null;
+        if ($feature['reported_by']['id'] === 0) {
+            $feature['reported_by'] = null;
         } else {
-            $reportedBy = $apiClient->getUser($bug['reported_by']['id']);
-            $bug['reported_by'] = implode(' ', [
+            $reportedBy = $apiClient->getUser($feature['reported_by']['id']);
+            $feature['reported_by'] = implode(' ', [
                 $reportedBy['first_name'],
                 $reportedBy['last_name'],
             ]);
         }
 
-        if ($bug['estimated_duration']['time_unit']['id'] === 0) {
-            $bug['estimated_duration'] = null;
+        if ($feature['estimated_duration']['time_unit']['id'] === 0) {
+            $feature['estimated_duration'] = null;
         } else {
-            $estimated = $apiClient->getPicklistItem('time_units', $bug['estimated_duration']['time_unit']['id']);
-            $bug['estimated_duration'] = sprintf(
+            $estimated = $apiClient->getPicklistItem('time_units', $feature['estimated_duration']['time_unit']['id']);
+            $feature['estimated_duration'] = sprintf(
                 '%s %s',
-                $bug['estimated_duration']['duration'],
+                $feature['estimated_duration']['duration'],
                 $estimated['name']
             );
         }
 
-        if ($bug['remaining_duration']['time_unit']['id'] === 0) {
-            $bug['remaining_duration'] = null;
+        if ($feature['remaining_duration']['time_unit']['id'] === 0) {
+            $feature['remaining_duration'] = null;
         } else {
-            $remaining = $apiClient->getPicklistItem('time_units', $bug['remaining_duration']['time_unit']['id']);
-            $bug['remaining_duration'] = sprintf(
+            $remaining = $apiClient->getPicklistItem('time_units', $feature['remaining_duration']['time_unit']['id']);
+            $feature['remaining_duration'] = sprintf(
                 '%s %s',
-                $bug['remaining_duration']['duration'],
+                $feature['remaining_duration']['duration'],
                 $remaining['name']
             );
         }
 
-        if ($bug['actual_duration']['time_unit']['id'] === 0) {
-            $bug['actual_duration'] = null;
+        if ($feature['actual_duration']['time_unit']['id'] === 0) {
+            $feature['actual_duration'] = null;
         } else {
-            $actual = $apiClient->getPicklistItem('time_units', $bug['actual_duration']['time_unit']['id']);
-            $bug['actual_duration'] = $this->formatDuration(
-                $bug['actual_duration']['duration'],
+            $actual = $apiClient->getPicklistItem('time_units', $feature['actual_duration']['time_unit']['id']);
+            $feature['actual_duration'] = $this->formatDuration(
+                $feature['actual_duration']['duration'],
                 $actual['name']
             );
         }
 
-        if (isset($bug['category'])) {
-            if ($bug['category']['id'] === 0) {
-                $bug['category'] = null;
+        if (isset($feature['category'])) {
+            if ($feature['category']['id'] === 0) {
+                $feature['category'] = null;
             } else {
-                $category = $apiClient->getPicklistItem('category', $bug['category']['id']);
-                $bug['category'] = $category['name'];
+                $category = $apiClient->getPicklistItem('category', $feature['category']['id']);
+                $feature['category'] = $category['name'];
             }
         }
 
-        $bug['start_date'] = $bug['start_date']
-            ? $this->formatDateTime($bug['start_date'])
+        $feature['start_date'] = $feature['start_date']
+            ? $this->formatDateTime($feature['start_date'])
             : null;
-        $bug['last_updated_date_time'] = $bug['last_updated_date_time']
-            ? $this->formatDateTime($bug['last_updated_date_time'])
+        $feature['last_updated_date_time'] = $feature['last_updated_date_time']
+            ? $this->formatDateTime($feature['last_updated_date_time'])
             : null;
 
-        foreach ($bug['custom_fields'] as $name => $value) {
-            $field = $apiClient->getCustomField('defects', $name);
+        foreach ($feature['custom_fields'] as $name => $value) {
+            $field = $apiClient->getCustomField('features', $name);
             // TODO(derrick): Do value translations.
-            $bug['_' . $field['label']] = $value;
+            $feature['_' . $field['label']] = $value;
         }
-        unset($bug['custom_fields']);
+        unset($feature['custom_fields']);
 
-        $title = sprintf('[%s] %s', $bug['id'], $bug['name']);
-        $desc = $bug['description'];
-        unset($bug['description']);
+        $title = sprintf('[%s] %s', $feature['id'], $feature['name']);
+        $desc = $feature['description'];
+        unset($feature['description']);
 
         if (!$input->getOption('full')) {
             // Hide stuff we don't want to show in a summary.
             unset(
-                $bug['archived'],
-                $bug['completion_date'],
-                $bug['due_date'],
-                $bug['estimated_duration'],
-                $bug['id'],
-                $bug['is_completed'],
-                $bug['item_type'],
-                $bug['name'],
-                $bug['number'],
-                $bug['percent_complete'],
-                $bug['publicly_viewable'],
-                $bug['remaining_duration'],
-                $bug['reported_by_customer_contact']
+                $feature['archived'],
+                $feature['completion_date'],
+                $feature['due_date'],
+                $feature['estimated_duration'],
+                $feature['id'],
+                $feature['is_completed'],
+                $feature['item_type'],
+                $feature['name'],
+                $feature['number'],
+                $feature['percent_complete'],
+                $feature['publicly_viewable'],
+                $feature['remaining_duration'],
+                $feature['reported_by_customer_contact']
             );
         }
 
@@ -177,7 +177,7 @@ class ShowCommand extends Command
                 } else {
                     return $value;
                 }
-            }, $bug),
+            }, $feature),
             1,
             true
         );
@@ -199,7 +199,7 @@ class ShowCommand extends Command
         if ($input->getOption('full')) {
             $io->section('Comments');
 
-            $comments = $apiClient->getBugComments($input->getArgument('id'));
+            $comments = $apiClient->getFeatureComments($input->getArgument('id'));
 
             usort($comments, function (array $a, array $b) {
                 if (getenv('AXO_COMMENT_SORT') ?: 'desc' === 'desc') {
