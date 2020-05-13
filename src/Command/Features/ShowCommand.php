@@ -38,133 +38,133 @@ class ShowCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiClient = new ApiClient();
-        $feature = $apiClient->getFeature($input->getArgument('id'));
+        $item = $apiClient->getFeature($input->getArgument('id'));
 
-        if ($feature['parent']['id'] === 0) {
-            $feature['parent'] = null;
+        if ($item['parent']['id'] === 0) {
+            $item['parent'] = null;
         } else {
-            $parent = $apiClient->getFeature($feature['parent']['id']);
-            $feature['parent'] = sprintf('[%s] %s', $parent['id'], $parent['name']);
+            $parent = $apiClient->getFeature($item['parent']['id']);
+            $item['parent'] = sprintf('[%s] %s', $parent['id'], $parent['name']);
         }
 
-        $project = $apiClient->getProject($feature['project']['id']);
-        $feature['project'] = $project['name'];
+        $project = $apiClient->getProject($item['project']['id']);
+        $item['project'] = $project['name'];
 
-        $workflowStep = $apiClient->getWorkflowStep($feature['workflow_step']['id']);
-        $feature['workflow_step'] = $workflowStep['name'];
+        $workflowStep = $apiClient->getWorkflowStep($item['workflow_step']['id']);
+        $item['workflow_step'] = $workflowStep['name'];
 
-        $release = $apiClient->getRelease($feature['release']['id']);
-        $feature['release'] = $release['name'];
+        $release = $apiClient->getRelease($item['release']['id']);
+        $item['release'] = $release['name'];
 
-        if ($feature['assigned_to']['id'] === 0) {
-            $feature['assigned_to'] = null;
+        if ($item['assigned_to']['id'] === 0) {
+            $item['assigned_to'] = null;
         } else {
-            $assignedTo = $apiClient->getUser($feature['assigned_to']['id']);
-            $feature['assigned_to'] = implode(' ', [
+            $assignedTo = $apiClient->getUser($item['assigned_to']['id']);
+            $item['assigned_to'] = implode(' ', [
                 $assignedTo['first_name'],
                 $assignedTo['last_name'],
             ]);
         }
 
-        if ($feature['status']['id'] === 0) {
-            $feature['status'] = null;
+        if ($item['status']['id'] === 0) {
+            $item['status'] = null;
         } else {
-            $status = $apiClient->getPicklistItem('status', $feature['status']['id']);
-            $feature['status'] = $status['name'];
+            $status = $apiClient->getPicklistItem('status', $item['status']['id']);
+            $item['status'] = $status['name'];
         }
 
-        if ($feature['priority']['id'] === 0) {
-            $feature['priority'] = null;
+        if ($item['priority']['id'] === 0) {
+            $item['priority'] = null;
         } else {
-            $priority = $apiClient->getPicklistItem('priority', $feature['priority']['id']);
-            $feature['priority'] = $priority['name'];
+            $priority = $apiClient->getPicklistItem('priority', $item['priority']['id']);
+            $item['priority'] = $priority['name'];
         }
 
-        if ($feature['reported_by']['id'] === 0) {
-            $feature['reported_by'] = null;
+        if ($item['reported_by']['id'] === 0) {
+            $item['reported_by'] = null;
         } else {
-            $reportedBy = $apiClient->getUser($feature['reported_by']['id']);
-            $feature['reported_by'] = implode(' ', [
+            $reportedBy = $apiClient->getUser($item['reported_by']['id']);
+            $item['reported_by'] = implode(' ', [
                 $reportedBy['first_name'],
                 $reportedBy['last_name'],
             ]);
         }
 
-        if ($feature['estimated_duration']['time_unit']['id'] === 0) {
-            $feature['estimated_duration'] = null;
+        if ($item['estimated_duration']['time_unit']['id'] === 0) {
+            $item['estimated_duration'] = null;
         } else {
-            $estimated = $apiClient->getPicklistItem('time_units', $feature['estimated_duration']['time_unit']['id']);
-            $feature['estimated_duration'] = sprintf(
+            $estimated = $apiClient->getPicklistItem('time_units', $item['estimated_duration']['time_unit']['id']);
+            $item['estimated_duration'] = sprintf(
                 '%s %s',
-                $feature['estimated_duration']['duration'],
+                $item['estimated_duration']['duration'],
                 $estimated['name']
             );
         }
 
-        if ($feature['remaining_duration']['time_unit']['id'] === 0) {
-            $feature['remaining_duration'] = null;
+        if ($item['remaining_duration']['time_unit']['id'] === 0) {
+            $item['remaining_duration'] = null;
         } else {
-            $remaining = $apiClient->getPicklistItem('time_units', $feature['remaining_duration']['time_unit']['id']);
-            $feature['remaining_duration'] = sprintf(
+            $remaining = $apiClient->getPicklistItem('time_units', $item['remaining_duration']['time_unit']['id']);
+            $item['remaining_duration'] = sprintf(
                 '%s %s',
-                $feature['remaining_duration']['duration'],
+                $item['remaining_duration']['duration'],
                 $remaining['name']
             );
         }
 
-        if ($feature['actual_duration']['time_unit']['id'] === 0) {
-            $feature['actual_duration'] = null;
+        if ($item['actual_duration']['time_unit']['id'] === 0) {
+            $item['actual_duration'] = null;
         } else {
-            $actual = $apiClient->getPicklistItem('time_units', $feature['actual_duration']['time_unit']['id']);
-            $feature['actual_duration'] = $this->formatDuration(
-                $feature['actual_duration']['duration'],
+            $actual = $apiClient->getPicklistItem('time_units', $item['actual_duration']['time_unit']['id']);
+            $item['actual_duration'] = $this->formatDuration(
+                $item['actual_duration']['duration'],
                 $actual['name']
             );
         }
 
-        if (isset($feature['category'])) {
-            if ($feature['category']['id'] === 0) {
-                $feature['category'] = null;
+        if (isset($item['category'])) {
+            if ($item['category']['id'] === 0) {
+                $item['category'] = null;
             } else {
-                $category = $apiClient->getPicklistItem('category', $feature['category']['id']);
-                $feature['category'] = $category['name'];
+                $category = $apiClient->getPicklistItem('category', $item['category']['id']);
+                $item['category'] = $category['name'];
             }
         }
 
-        $feature['start_date'] = $feature['start_date']
-            ? $this->formatDateTime($feature['start_date'])
+        $item['start_date'] = $item['start_date']
+            ? $this->formatDateTime($item['start_date'])
             : null;
-        $feature['last_updated_date_time'] = $feature['last_updated_date_time']
-            ? $this->formatDateTime($feature['last_updated_date_time'])
+        $item['last_updated_date_time'] = $item['last_updated_date_time']
+            ? $this->formatDateTime($item['last_updated_date_time'])
             : null;
 
-        foreach ($feature['custom_fields'] as $name => $value) {
+        foreach ($item['custom_fields'] as $name => $value) {
             $field = $apiClient->getCustomField('features', $name);
             // TODO(derrick): Do value translations.
-            $feature['_' . $field['label']] = $value;
+            $item['_' . $field['label']] = $value;
         }
-        unset($feature['custom_fields']);
+        unset($item['custom_fields']);
 
-        $title = sprintf('[%s] %s', $feature['id'], $feature['name']);
-        $desc = $feature['description'];
-        unset($feature['description']);
+        $title = sprintf('[%s] %s', $item['id'], $item['name']);
+        $desc = $item['description'];
+        unset($item['description']);
 
         if (!$input->getOption('full')) {
             // Hide stuff we don't want to show in a summary.
             unset(
-                $feature['archived'],
-                $feature['completion_date'],
-                $feature['due_date'],
-                $feature['estimated_duration'],
-                $feature['id'],
-                $feature['is_completed'],
-                $feature['item_type'],
-                $feature['name'],
-                $feature['number'],
-                $feature['percent_complete'],
-                $feature['publicly_viewable'],
-                $feature['remaining_duration'],
-                $feature['reported_by_customer_contact']
+                $item['archived'],
+                $item['completion_date'],
+                $item['due_date'],
+                $item['estimated_duration'],
+                $item['id'],
+                $item['is_completed'],
+                $item['item_type'],
+                $item['name'],
+                $item['number'],
+                $item['percent_complete'],
+                $item['publicly_viewable'],
+                $item['remaining_duration'],
+                $item['reported_by_customer_contact']
             );
         }
 
@@ -177,7 +177,7 @@ class ShowCommand extends Command
                 } else {
                     return $value;
                 }
-            }, $feature),
+            }, $item),
             1,
             true
         );
