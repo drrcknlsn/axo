@@ -1,27 +1,27 @@
 <?php
 
-namespace Drrcknlsn\Axo\Command\Items;
+namespace Drrcknlsn\Axo\Command\Users;
 
 use Drrcknlsn\Axo\ApiClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ListCommand extends Command
+class MeCommand extends Command
 {
-    protected static $defaultName = 'items:list';
+    protected static $defaultName = 'users:me';
 
     protected function configure()
     {
-        $this->setDescription('Lists the items.');
+        $this->setDescription('Lists me.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $apiClient = new ApiClient();
-        $items = $apiClient->getItems();
+        $users = $apiClient->getMe();
 
-        $output->writeln(json_encode($items, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        $output->writeln(json_encode($users, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
         return 0;
     }

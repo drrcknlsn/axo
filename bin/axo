@@ -30,4 +30,7 @@ $app->add(new Task\ListCommand());
 $app->add(new Task\ShowCommand());
 $app->add(new Users\ListCommand());
 $app->add(new Users\ShowCommand());
+$app->add(new Command\Backlog\WorkableCommand());
+$app->add(new Items\TakeCommand());
+$app->add(new Users\MeCommand());
 $app->run();
