@@ -4,6 +4,7 @@ namespace Drrcknlsn\Axo;
 
 use Exception;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\GenericProvider;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -373,6 +374,10 @@ class ApiClient
 
     /**
      * Performs an arbitrary GET request.
+     * @param string $path
+     * @param array $params
+     * @return array
+     * @throws GuzzleException
      */
     public function get(string $path, array $params = []): array
     {
@@ -380,17 +385,51 @@ class ApiClient
     }
 
     /**
-     * Performs an arbitrary authenticated request.
+     * Performs an arbitrary POST request
+     * @param string $path
+     * @param array $data
+     * @return array
      */
-    private function doRequest(string $method, string $path, array $params = []): array
+    public function post(string $path, array $data): array
+    {
+        return $this->doRequest(
+            'POST',
+            $path,
+            [],
+            [
+                'body' => json_encode((object)$data),
+                'headers' => ['Content-Type' => 'application/json'],
+            ]
+        );
+    }
+
+    /**
+     * Performs an arbitrary authenticated request.
+     * @param string $method
+     * @param string $path
+     * @param array $params
+     * @param array $options
+     * @return array
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    private function doRequest(string $method, string $path, array $params = [], array $options = []): array
     {
         $accessToken = $this->getAccessToken();
 
-        $options = [
-            'headers' => [
-                'authorization' => 'Bearer ' . $accessToken,
-            ],
-        ];
+        $options = array_merge(
+            array_filter($options, function ($k) {
+                return $k !== 'headers';
+            }, ARRAY_FILTER_USE_KEY),
+            [
+                'headers' => array_merge(
+                    [
+                         'authorization' => 'Bearer ' . $accessToken,
+                    ],
+                    $options['headers'] ?? []
+                ),
+            ]
+        );
 
         if (
             $method === 'GET'
@@ -418,7 +457,7 @@ class ApiClient
         );
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg(), json_last_error());
+            throw new Exception(json_last_error_msg(), json_last_error());
         }
 
         return $resData;
@@ -458,5 +497,37 @@ class ApiClient
             md5(getenv('AXO_BASE_URL') . ':' . getenv('AXO_USERNAME')),
             $type
         );
+    }
+
+    public function updateBug(int $id, array $data): bool
+    {
+        $response = $this->post('/defects/' . $id, $data);
+        // What means success?
+        return true;
+    }
+
+    public function updateTask(int $id, array $data): bool
+    {
+        $response = $this->post('/tasks/' . $id, $data);
+        // What means success?
+        return true;
+    }
+
+    public function updateFeature(int $id, array $data): bool
+    {
+        $response = $this->post('/features/' . $id, $data);
+        // What means success?
+        return true;
+    }
+
+    public function getMe(): array
+    {
+        $cacheKey = $this->getCacheKey('me');
+
+        return $this->cache->get($cacheKey, function () {
+            $resData = $this->get('/me');
+
+            return $resData['data'];
+        });
     }
 }
