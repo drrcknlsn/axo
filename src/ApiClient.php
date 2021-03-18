@@ -80,6 +80,22 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/defects.html#!/defects/_item_type_id_attachments_GET_get
+     */
+    public function getBugAttachments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('bug-' . $id . '-attachments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/defects/' . $id . '/attachments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/defects.html#!/defects/_item_type_id_comments_GET_get
      */
     public function getBugComments(int $id): array
@@ -118,6 +134,22 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/tasks/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/tasks.html#!/tasks/_item_type_id_attachments_GET_get
+     */
+    public function getTaskAttachments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('task-' . $id . '-attachments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/tasks/' . $id . '/attachments');
 
             return $resData['data'];
         });
@@ -174,6 +206,22 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/features/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/features.html#!/features/_item_type_id_attachments_GET_get
+     */
+    public function getFeatureAttachments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('feature-' . $id . '-attachments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/features/' . $id . '/attachments');
 
             return $resData['data'];
         });
