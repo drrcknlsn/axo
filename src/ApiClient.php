@@ -291,6 +291,19 @@ class ApiClient
         });
     }
 
+    public function getItemWorkLogs(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('item-' . $id . '-work-logs');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            return $this->getWorkLogs([
+                'item_id' => $id,
+            ]);
+        });
+    }
+
     /**
      * @see http://developer.axosoft.com/api/items.html#!/items/_item_type_GET_get
      */
@@ -465,6 +478,18 @@ class ApiClient
 
             return $resData['data'];
         });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/work_logs.html#!/work_logs/_work_logs_GET_get
+     */
+    public function getWorkLogs(array $options = []): array
+    {
+        $defaults = [
+            'page_size' => self::DEFAULT_PAGE_SIZE,
+        ];
+
+        return $this->get('/work_logs', array_merge($defaults, $options));
     }
 
     /**
