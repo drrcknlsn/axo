@@ -201,7 +201,7 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get(
-                '/incidents/' . $id . '/comments',
+                '/incidents/' . $id . '/work_logs',
                 $options,
             );
 
@@ -268,7 +268,7 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get(
-                '/tasks/' . $id . '/comments',
+                '/tasks/' . $id . '/work_logs',
                 $options,
             );
 
@@ -359,7 +359,7 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get(
-                '/features/' . $id . '/comments',
+                '/features/' . $id . '/work_logs',
                 $options,
             );
 
