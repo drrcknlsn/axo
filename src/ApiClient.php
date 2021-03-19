@@ -140,6 +140,38 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/incidents.html#!/incidents/_item_type_id_attachments_GET_get
+     */
+    public function getIncidentAttachments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('incident-' . $id . '-attachments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/incidents/' . $id . '/attachments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/incidents.html#!/incidents/_item_type_id_comments_GET_get
+     */
+    public function getIncidentComments(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('incident-' . $id . '-comments');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/incidents/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/tasks.html#!/tasks/_item_type_number_GET_get
      */
     public function getTask(int $id): array
