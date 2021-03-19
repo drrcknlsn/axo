@@ -111,17 +111,23 @@ class ApiClient
         });
     }
 
-    public function getBugWorkLogs(int $id): array
+    public function getBugWorkLogs(int $id, array $options = []): array
     {
         $cacheKey = $this->getCacheKey('feature-' . $id . '-work-logs');
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use (
+            $id,
+            $options
+        ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs([
-                'item_types' => 'defects',
-                'item_id' => $id,
-            ]);
+            $resData = $this->getWorkLogs(array_merge(
+                $options,
+                [
+                    'item_types' => 'defects',
+                    'item_id' => $id,
+                ],
+            ));
 
             return $resData['data'];
         });
@@ -187,17 +193,23 @@ class ApiClient
         });
     }
 
-    public function getIncidentWorkLogs(int $id): array
+    public function getIncidentWorkLogs(int $id, array $options = []): array
     {
         $cacheKey = $this->getCacheKey('incident-' . $id . '-work-logs');
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use (
+            $id,
+            $options
+        ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs([
-                'item_types' => 'incidents',
-                'item_id' => $id,
-            ]);
+            $resData = $this->getWorkLogs(array_merge(
+                $options,
+                [
+                    'item_types' => 'incidents',
+                    'item_id' => $id,
+                ],
+            ));
 
             return $resData['data'];
         });
@@ -251,17 +263,23 @@ class ApiClient
         });
     }
 
-    public function getTaskWorkLogs(int $id): array
+    public function getTaskWorkLogs(int $id, array $options = []): array
     {
         $cacheKey = $this->getCacheKey('task-' . $id . '-work-logs');
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use (
+            $id,
+            $options
+        ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs([
-                'item_types' => 'tasks',
-                'item_id' => $id,
-            ]);
+            $resData = $this->getWorkLogs(array_merge(
+                $options,
+                [
+                    'item_types' => 'tasks',
+                    'item_id' => $id,
+                ],
+            ));
 
             return $resData['data'];
         });
@@ -339,17 +357,23 @@ class ApiClient
         });
     }
 
-    public function getFeatureWorkLogs(int $id): array
+    public function getFeatureWorkLogs(int $id, array $options = []): array
     {
         $cacheKey = $this->getCacheKey('feature-' . $id . '-work-logs');
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use (
+            $id,
+            $options
+        ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs([
-                'item_types' => 'features',
-                'item_id' => $id,
-            ]);
+            $resData = $this->getWorkLogs(array_merge(
+                $options,
+                [
+                    'item_types' => 'features',
+                    'item_id' => $id,
+                ],
+            ));
 
             return $resData['data'];
         });
