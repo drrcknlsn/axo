@@ -111,6 +111,20 @@ class ApiClient
         });
     }
 
+    public function getBugWorkLogs(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('feature-' . $id . '-work-logs');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            return $this->getWorkLogs([
+                'item_types' => 'defects',
+                'item_id' => $id,
+            ]);
+        });
+    }
+
     /**
      * @see http://developer.axosoft.com/api/defects.html#!/defects/_item_type_GET_get
      */
@@ -171,6 +185,20 @@ class ApiClient
         });
     }
 
+    public function getIncidentWorkLogs(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('incident-' . $id . '-work-logs');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            return $this->getWorkLogs([
+                'item_types' => 'incidents',
+                'item_id' => $id,
+            ]);
+        });
+    }
+
     /**
      * @see http://developer.axosoft.com/api/tasks.html#!/tasks/_item_type_number_GET_get
      */
@@ -216,6 +244,20 @@ class ApiClient
             $resData = $this->get('/tasks/' . $id . '/comments');
 
             return $resData['data'];
+        });
+    }
+
+    public function getTaskWorkLogs(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('task-' . $id . '-work-logs');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            return $this->getWorkLogs([
+                'item_types' => 'tasks',
+                'item_id' => $id,
+            ]);
         });
     }
 
@@ -291,14 +333,15 @@ class ApiClient
         });
     }
 
-    public function getItemWorkLogs(int $id): array
+    public function getFeatureWorkLogs(int $id): array
     {
-        $cacheKey = $this->getCacheKey('item-' . $id . '-work-logs');
+        $cacheKey = $this->getCacheKey('feature-' . $id . '-work-logs');
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
             return $this->getWorkLogs([
+                'item_types' => 'features',
                 'item_id' => $id,
             ]);
         });
