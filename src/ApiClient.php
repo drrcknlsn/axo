@@ -126,7 +126,7 @@ class ApiClient
     /**
      * @see http://developer.axosoft.com/api/incidents.html#!/incidents/_item_type_number_GET_get
      */
-    public function getIncident(string $id): array
+    public function getIncident(int $id): array
     {
         $cacheKey = $this->getCacheKey('incident-' . $id);
 
