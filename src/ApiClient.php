@@ -124,6 +124,22 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/incidents.html#!/incidents/_item_type_number_GET_get
+     */
+    public function getIncident(string $id): array
+    {
+        $cacheKey = $this->getCacheKey('incident-' . $id);
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/incidents/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/tasks.html#!/tasks/_item_type_number_GET_get
      */
     public function getTask(int $id): array
