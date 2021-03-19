@@ -121,13 +121,10 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs(array_merge(
+            $resData = $this->get(
+                '/defects/' . $id . '/work_logs',
                 $options,
-                [
-                    'item_types' => 'defects',
-                    'item_id' => $id,
-                ],
-            ));
+            );
 
             return $resData['data'];
         });
@@ -203,13 +200,10 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs(array_merge(
+            $resData = $this->get(
+                '/incidents/' . $id . '/comments',
                 $options,
-                [
-                    'item_types' => 'incidents',
-                    'item_id' => $id,
-                ],
-            ));
+            );
 
             return $resData['data'];
         });
@@ -273,13 +267,10 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs(array_merge(
+            $resData = $this->get(
+                '/tasks/' . $id . '/comments',
                 $options,
-                [
-                    'item_types' => 'tasks',
-                    'item_id' => $id,
-                ],
-            ));
+            );
 
             return $resData['data'];
         });
@@ -367,13 +358,10 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->getWorkLogs(array_merge(
+            $resData = $this->get(
+                '/features/' . $id . '/comments',
                 $options,
-                [
-                    'item_types' => 'features',
-                    'item_id' => $id,
-                ],
-            ));
+            );
 
             return $resData['data'];
         });
