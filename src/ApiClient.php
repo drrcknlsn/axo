@@ -118,10 +118,12 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            return $this->getWorkLogs([
+            $resData = $this->getWorkLogs([
                 'item_types' => 'defects',
                 'item_id' => $id,
             ]);
+
+            return $resData['data'];
         });
     }
 
@@ -192,10 +194,12 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            return $this->getWorkLogs([
+            $resData = $this->getWorkLogs([
                 'item_types' => 'incidents',
                 'item_id' => $id,
             ]);
+
+            return $resData['data'];
         });
     }
 
@@ -254,10 +258,12 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            return $this->getWorkLogs([
+            $resData = $this->getWorkLogs([
                 'item_types' => 'tasks',
                 'item_id' => $id,
             ]);
+
+            return $resData['data'];
         });
     }
 
@@ -340,10 +346,12 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            return $this->getWorkLogs([
+            $resData = $this->getWorkLogs([
                 'item_types' => 'features',
                 'item_id' => $id,
             ]);
+
+            return $resData['data'];
         });
     }
 
