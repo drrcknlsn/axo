@@ -63,6 +63,19 @@ class ApiClient
         $this->cache = new FilesystemAdapter('', 0, __DIR__ . '/../cache');
     }
 
+    public function getAuditTrail(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('audit-trail-' . $id);
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/audit_trails/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
     /**
      * @see http://developer.axosoft.com/api/defects.html#!/defects/_item_type_number_GET_get
      */
@@ -106,6 +119,19 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/defects/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    public function getBugHistory(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('defect-' . $id . '-history');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/defects/' . $id . '/history');
 
             return $resData['data'];
         });
@@ -190,6 +216,19 @@ class ApiClient
         });
     }
 
+    public function getIncidentHistory(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('incident-' . $id . '-history');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/incidents/' . $id . '/history');
+
+            return $resData['data'];
+        });
+    }
+
     public function getIncidentWorkLogs(int $id, array $options = []): array
     {
         $cacheKey = $this->getCacheKey('incident-' . $id . '-work-logs');
@@ -252,6 +291,19 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/tasks/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    public function getTaskHistory(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('task-' . $id . '-history');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/tasks/' . $id . '/history');
 
             return $resData['data'];
         });
@@ -343,6 +395,19 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/features/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    public function getFeatureHistory(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('feature-' . $id . '-history');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/features/' . $id . '/history');
 
             return $resData['data'];
         });
