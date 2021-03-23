@@ -129,17 +129,7 @@ class ApiClient
      */
     public function getBugCustomFields(): array
     {
-        $cacheKey = $this->getCacheKey('defect-' . $id . '-custom-fields');
-
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
-            $item->expiresAfter(300);
-
-            $resData = $this->get('/fields/custom', [
-                'type' => 'defects',
-            ]);
-
-            return $resData['data'];
-        });
+        return $this->getCustomFields('defects');
     }
 
     public function getBugHistory(int $id): array
@@ -239,17 +229,7 @@ class ApiClient
      */
     public function getIncidentCustomFields(): array
     {
-        $cacheKey = $this->getCacheKey('incident-' . $id . '-custom-fields');
-
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
-            $item->expiresAfter(300);
-
-            $resData = $this->get('/fields/custom', [
-                'type' => 'incidents',
-            ]);
-
-            return $resData['data'];
-        });
+        return $this->getCustomFields('incidents');
     }
 
     public function getIncidentHistory(int $id): array
@@ -337,17 +317,7 @@ class ApiClient
      */
     public function getTaskCustomFields(): array
     {
-        $cacheKey = $this->getCacheKey('task-' . $id . '-custom-fields');
-
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
-            $item->expiresAfter(300);
-
-            $resData = $this->get('/fields/custom', [
-                'type' => 'tasks',
-            ]);
-
-            return $resData['data'];
-        });
+        return $this->getCustomFields('tasks');
     }
 
     public function getTaskHistory(int $id): array
@@ -459,17 +429,7 @@ class ApiClient
      */
     public function getFeatureCustomFields(): array
     {
-        $cacheKey = $this->getCacheKey('feature-' . $id . '-custom-fields');
-
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
-            $item->expiresAfter(300);
-
-            $resData = $this->get('/fields/custom', [
-                'type' => 'defects',
-            ]);
-
-            return $resData['data'];
-        });
+        return $this->getCustomFields('defects');
     }
 
     public function getFeatureHistory(int $id): array
