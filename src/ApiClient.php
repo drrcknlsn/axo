@@ -124,6 +124,24 @@ class ApiClient
         });
     }
 
+    /**
+     * @see http://developer.axosoft.com/api/fields.html#!/fields/_fields_custom_GET_get
+     */
+    public function getBugCustomFields(): array
+    {
+        $cacheKey = $this->getCacheKey('defect-' . $id . '-custom-fields');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/fields/custom', [
+                'type' => 'defects',
+            ]);
+
+            return $resData['data'];
+        });
+    }
+
     public function getBugHistory(int $id): array
     {
         $cacheKey = $this->getCacheKey('defect-' . $id . '-history');
@@ -216,6 +234,24 @@ class ApiClient
         });
     }
 
+    /**
+     * @see http://developer.axosoft.com/api/fields.html#!/fields/_fields_custom_GET_get
+     */
+    public function getIncidentCustomFields(): array
+    {
+        $cacheKey = $this->getCacheKey('incident-' . $id . '-custom-fields');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/fields/custom', [
+                'type' => 'incidents',
+            ]);
+
+            return $resData['data'];
+        });
+    }
+
     public function getIncidentHistory(int $id): array
     {
         $cacheKey = $this->getCacheKey('incident-' . $id . '-history');
@@ -291,6 +327,24 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/tasks/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/fields.html#!/fields/_fields_custom_GET_get
+     */
+    public function getTaskCustomFields(): array
+    {
+        $cacheKey = $this->getCacheKey('task-' . $id . '-custom-fields');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/fields/custom', [
+                'type' => 'tasks',
+            ]);
 
             return $resData['data'];
         });
@@ -395,6 +449,24 @@ class ApiClient
             $item->expiresAfter(300);
 
             $resData = $this->get('/features/' . $id . '/comments');
+
+            return $resData['data'];
+        });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/fields.html#!/fields/_fields_custom_GET_get
+     */
+    public function getFeatureCustomFields(): array
+    {
+        $cacheKey = $this->getCacheKey('feature-' . $id . '-custom-fields');
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/fields/custom', [
+                'type' => 'defects',
+            ]);
 
             return $resData['data'];
         });
