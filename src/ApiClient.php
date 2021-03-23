@@ -429,7 +429,7 @@ class ApiClient
      */
     public function getFeatureCustomFields(): array
     {
-        return $this->getCustomFields('defects');
+        return $this->getCustomFields('features');
     }
 
     public function getFeatureHistory(int $id): array
