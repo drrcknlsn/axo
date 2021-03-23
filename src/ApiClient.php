@@ -543,6 +543,53 @@ class ApiClient
         });
     }
 
+    public function getPicklistOptions(string $type): array
+    {
+        $origOptions = $this->getPicklist($type);
+
+        usort($origOptions, fn ($a, $b) => $a['order'] <=> $b['order']);
+
+        $options = [];
+
+        foreach ($origOptions as $origOption) {
+            $options[$origOption['id']] = $origOption['name'];
+        }
+
+        return $options;
+    }
+
+    public function getCustomPicklist(int $id): array
+    {
+        $customPicklists = $this->getPicklist('custom');
+
+        foreach ($customPicklists as $customPicklist) {
+            if ($customPicklist['id'] === $id) {
+                return $customPicklist;
+            }
+        }
+
+        throw new Exception(sprintf(
+            'Custom picklist not found: %s',
+            $id,
+        ));
+    }
+
+    public function getCustomPicklistOptions(int $id): array
+    {
+        $customPicklist = $this->getCustomPicklist($id);
+        $origOptions = $customPicklist['values'];
+
+        usort($origOptions, fn ($a, $b) => $a['order'] <=> $b['order']);
+
+        $options = [];
+
+        foreach ($origOptions as $origOption) {
+            $options[$origOption['id']] = $origOption['value'];
+        }
+
+        return $options;
+    }
+
     public function getPicklistItem(string $type, int $id): array
     {
         $picklist = $this->getPicklist($type);
