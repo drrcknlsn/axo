@@ -177,6 +177,22 @@ class ApiClient
     }
 
     /**
+     * @see http://developer.axosoft.com/api/contacts.html#!/contacts/_contacts_id_GET_get
+     */
+    public function getContact(int $id): array
+    {
+        $cacheKey = $this->getCacheKey('contact-' . $id);
+
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(300);
+
+            $resData = $this->get('/contacts/' . $id);
+
+            return $resData['data'];
+        });
+    }
+
+    /**
      * @see http://developer.axosoft.com/api/incidents.html#!/incidents/_item_type_number_GET_get
      */
     public function getIncident(int $id): array
