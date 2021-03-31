@@ -770,6 +770,10 @@ class ApiClient
             $path
         );
 
+        if (getenv('AXO_DEBUG') === 'true') {
+            printf("Request URL: %s\n", $url);
+        }
+
         $response = $this->httpClient->request(
             $method,
             $url,
