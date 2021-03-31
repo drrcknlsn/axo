@@ -63,6 +63,16 @@ class ApiClient
         $this->cache = new FilesystemAdapter('', 0, __DIR__ . '/../cache');
     }
 
+    public function getActivity(): array
+    {
+        $res = $this->get('/activity', [
+            'page' => 0,
+            'page_size' => 10,
+        ]);
+
+        return $res;
+    }
+
     public function getAuditTrail(int $id): array
     {
         $cacheKey = $this->getCacheKey('audit-trail-' . $id);
@@ -190,6 +200,16 @@ class ApiClient
 
             return $resData['data'];
         });
+    }
+
+    /**
+     * @see http://developer.axosoft.com/api/contacts.html#!/contacts/_contacts_GET_get
+     */
+    public function getContacts(): array
+    {
+        $resData = $this->get('/contacts');
+
+        return $resData['data'];
     }
 
     /**
