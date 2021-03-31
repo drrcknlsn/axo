@@ -5,6 +5,7 @@ namespace Drrcknlsn\Axo;
 use Exception;
 use GuzzleHttp\Client as HttpClient;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -65,12 +66,31 @@ class ApiClient
 
     public function getActivity(): array
     {
-        $res = $this->get('/activity', [
+        $res = $this->getJson('/activity', [
             'page' => 0,
             'page_size' => 10,
         ]);
 
         return $res;
+    }
+
+    public function getAttachment(int $id): array
+    {
+        $resData = $this->getJson('/attachments/' . $id);
+
+        return $resData['data'];
+    }
+
+    /**
+     * @param resource $sink
+     */
+    public function getAttachmentData(int $id, $sink): ResponseInterface
+    {
+        $path = '/attachments/' . $id . '/data';
+
+        return $this->doRequest('GET', $path, [], [
+            'sink' => $sink,
+        ]);
     }
 
     public function getAuditTrail(int $id): array
@@ -80,7 +100,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/audit_trails/' . $id);
+            $resData = $this->getJson('/audit_trails/' . $id);
 
             return $resData['data'];
         });
@@ -96,7 +116,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/defects/' . $id);
+            $resData = $this->getJson('/defects/' . $id);
 
             return $resData['data'];
         });
@@ -112,7 +132,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/defects/' . $id . '/attachments');
+            $resData = $this->getJson('/defects/' . $id . '/attachments');
 
             return $resData['data'];
         });
@@ -128,7 +148,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/defects/' . $id . '/comments');
+            $resData = $this->getJson('/defects/' . $id . '/comments');
 
             return $resData['data'];
         });
@@ -149,7 +169,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/defects/' . $id . '/history');
+            $resData = $this->getJson('/defects/' . $id . '/history');
 
             return $resData['data'];
         });
@@ -165,7 +185,7 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->get(
+            $resData = $this->getJson(
                 '/defects/' . $id . '/work_logs',
                 $options,
             );
@@ -183,7 +203,7 @@ class ApiClient
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
-        return $this->get('/defects', array_merge($defaults, $options));
+        return $this->getJson('/defects', array_merge($defaults, $options));
     }
 
     /**
@@ -196,7 +216,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/contacts/' . $id);
+            $resData = $this->getJson('/contacts/' . $id);
 
             return $resData['data'];
         });
@@ -207,7 +227,7 @@ class ApiClient
      */
     public function getContacts(): array
     {
-        $resData = $this->get('/contacts');
+        $resData = $this->getJson('/contacts');
 
         return $resData['data'];
     }
@@ -222,7 +242,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/incidents/' . $id);
+            $resData = $this->getJson('/incidents/' . $id);
 
             return $resData['data'];
         });
@@ -238,7 +258,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/incidents/' . $id . '/attachments');
+            $resData = $this->getJson('/incidents/' . $id . '/attachments');
 
             return $resData['data'];
         });
@@ -254,7 +274,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/incidents/' . $id . '/comments');
+            $resData = $this->getJson('/incidents/' . $id . '/comments');
 
             return $resData['data'];
         });
@@ -275,7 +295,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/incidents/' . $id . '/history');
+            $resData = $this->getJson('/incidents/' . $id . '/history');
 
             return $resData['data'];
         });
@@ -291,7 +311,7 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->get(
+            $resData = $this->getJson(
                 '/incidents/' . $id . '/work_logs',
                 $options,
             );
@@ -310,7 +330,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/tasks/' . $id);
+            $resData = $this->getJson('/tasks/' . $id);
 
             return $resData['data'];
         });
@@ -326,7 +346,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/tasks/' . $id . '/attachments');
+            $resData = $this->getJson('/tasks/' . $id . '/attachments');
 
             return $resData['data'];
         });
@@ -342,7 +362,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/tasks/' . $id . '/comments');
+            $resData = $this->getJson('/tasks/' . $id . '/comments');
 
             return $resData['data'];
         });
@@ -363,7 +383,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/tasks/' . $id . '/history');
+            $resData = $this->getJson('/tasks/' . $id . '/history');
 
             return $resData['data'];
         });
@@ -379,7 +399,7 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->get(
+            $resData = $this->getJson(
                 '/tasks/' . $id . '/work_logs',
                 $options,
             );
@@ -397,7 +417,7 @@ class ApiClient
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
-        return $this->get('/tasks', array_merge($defaults, $options));
+        return $this->getJson('/tasks', array_merge($defaults, $options));
     }
 
     /**
@@ -409,7 +429,7 @@ class ApiClient
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
-        return $this->get('/features', array_merge($defaults, $options));
+        return $this->getJson('/features', array_merge($defaults, $options));
     }
 
     /**
@@ -422,7 +442,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/features/' . $id);
+            $resData = $this->getJson('/features/' . $id);
 
             return $resData['data'];
         });
@@ -438,7 +458,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/features/' . $id . '/attachments');
+            $resData = $this->getJson('/features/' . $id . '/attachments');
 
             return $resData['data'];
         });
@@ -454,7 +474,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/features/' . $id . '/comments');
+            $resData = $this->getJson('/features/' . $id . '/comments');
 
             return $resData['data'];
         });
@@ -475,7 +495,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/features/' . $id . '/history');
+            $resData = $this->getJson('/features/' . $id . '/history');
 
             return $resData['data'];
         });
@@ -491,7 +511,7 @@ class ApiClient
         ) {
             $item->expiresAfter(300);
 
-            $resData = $this->get(
+            $resData = $this->getJson(
                 '/features/' . $id . '/work_logs',
                 $options,
             );
@@ -509,7 +529,7 @@ class ApiClient
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
-        return $this->get('/items', array_merge($defaults, $options));
+        return $this->getJson('/items', array_merge($defaults, $options));
     }
 
     /**
@@ -522,7 +542,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($type) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/fields/custom', [
+            $resData = $this->getJson('/fields/custom', [
                 'type' => $type,
             ]);
 
@@ -557,7 +577,7 @@ class ApiClient
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($type) {
             $item->expiresAfter(300);
 
-            $resData = $this->get('/filters', [
+            $resData = $this->getJson('/filters', [
                 'item_type' => $type,
             ]);
 
@@ -573,7 +593,7 @@ class ApiClient
         $cacheKey = $this->getCacheKey('picklist-' . $type);
 
         return $this->cache->get($cacheKey, function () use ($type) {
-            $resData = $this->get('/picklists/' . $type);
+            $resData = $this->getJson('/picklists/' . $type);
 
             return $resData['data'];
         });
@@ -648,7 +668,7 @@ class ApiClient
      */
     public function getProjects(): array
     {
-        $resData = $this->get('/projects');
+        $resData = $this->getJson('/projects');
 
         return $resData['data'];
     }
@@ -661,7 +681,7 @@ class ApiClient
         $cacheKey = $this->getCacheKey('project-' . $id);
 
         return $this->cache->get($cacheKey, function () use ($id) {
-            $resData = $this->get('/projects/' . $id);
+            $resData = $this->getJson('/projects/' . $id);
 
             return $resData['data'];
         });
@@ -675,7 +695,7 @@ class ApiClient
         $cacheKey = $this->getCacheKey('release-' . $id);
 
         return $this->cache->get($cacheKey, function () use ($id) {
-            $resData = $this->get('/releases/' . $id);
+            $resData = $this->getJson('/releases/' . $id);
 
             return $resData['data'];
         });
@@ -689,7 +709,7 @@ class ApiClient
         $cacheKey = $this->getCacheKey('user-' . $id);
 
         return $this->cache->get($cacheKey, function () use ($id) {
-            $resData = $this->get('/users/' . $id);
+            $resData = $this->getJson('/users/' . $id);
 
             return $resData['data'];
         });
@@ -703,7 +723,7 @@ class ApiClient
         $cacheKey = $this->getCacheKey('users');
 
         return $this->cache->get($cacheKey, function () {
-            $resData = $this->get('/users');
+            $resData = $this->getJson('/users');
 
             return $resData['data'];
         });
@@ -717,7 +737,7 @@ class ApiClient
         $cacheKey = $this->getCacheKey('workflow-step-' . $id);
 
         return $this->cache->get($cacheKey, function () use ($id) {
-            $resData = $this->get('/workflow_steps/' . $id);
+            $resData = $this->getJson('/workflow_steps/' . $id);
 
             return $resData['data'];
         });
@@ -732,29 +752,44 @@ class ApiClient
             'page_size' => self::DEFAULT_PAGE_SIZE,
         ];
 
-        return $this->get('/work_logs', array_merge($defaults, $options));
+        return $this->getJson('/work_logs', array_merge($defaults, $options));
     }
 
-    /**
-     * Performs an arbitrary GET request.
-     */
-    public function get(string $path, array $params = []): array
+    public function getJson(string $path, array $params = []): array
     {
-        return $this->doRequest('GET', $path, $params);
+        $response = $this->doRequest('GET', $path, $params);
+
+        $resData = json_decode(
+            $response->getBody()->getContents(),
+            true
+        );
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception(json_last_error_msg(), json_last_error());
+        }
+
+        return $resData;
     }
 
     /**
      * Performs an arbitrary authenticated request.
      */
-    private function doRequest(string $method, string $path, array $params = []): array
-    {
+    private function doRequest(
+        string $method,
+        string $path,
+        array $params = [],
+        array $options = []
+    ): ResponseInterface {
         $accessToken = $this->getAccessToken();
 
-        $options = [
-            'headers' => [
-                'authorization' => 'Bearer ' . $accessToken,
+        $options = array_merge(
+            $options,
+            [
+                'headers' => [
+                    'authorization' => 'Bearer ' . $accessToken,
+                ],
             ],
-        ];
+        );
 
         if (
             $method === 'GET'
@@ -774,22 +809,11 @@ class ApiClient
             printf("Request URL: %s\n", $url);
         }
 
-        $response = $this->httpClient->request(
+        return $this->httpClient->request(
             $method,
             $url,
             $options
         );
-
-        $resData = json_decode(
-            $response->getBody()->getContents(),
-            true
-        );
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception(json_last_error_msg(), json_last_error());
-        }
-
-        return $resData;
     }
 
     private function getAccessToken(): string

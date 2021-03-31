@@ -20,7 +20,8 @@
         "vlucas/phpdotenv": "^4.1",
         "symfony/cache": "^4.4",
         "nesbot/carbon": "^2.33",
-        "ezyang/htmlpurifier": "^4.12"
+        "ezyang/htmlpurifier": "^4.12",
+        "psr/http-message": "^1.0"
     },
     "autoload": {
         "psr-4": {
